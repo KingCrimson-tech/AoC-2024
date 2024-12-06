@@ -1,18 +1,32 @@
-#This is not completely my own solution
+with open('input6.txt') as f:
+    grid = list(map(list, f.read().splitlines()))
 
-g = {i+j*1j: c for i, r in enumerate(open('input6.txt'))
-               for j, c in enumerate(r.strip())}
+rows = len(grid)
+cols = len(grid[0])
 
-start = min(p for p in g if g[p] == '^')
+found = False
+for r in range(rows):
+    for c in range(cols):
+        if grid[r][c] == '^':
+            found = True
+            break
+    if found:
+        break
+else:
+    print('No')
 
-def walk(g):
-    pos, dir, seen = start, -1, set()
-    while pos in g and (pos, dir) not in seen:
-        seen |= {(pos, dir)}
-        if g.get(pos+dir) == '#':
-            dir *= -1j
-        else: pos += dir
-    return {p for p,_ in seen}, (pos, dir) in seen
+dr = -1
+dc = 0
 
-path = walk(g)[0]
-print(len(path), sum(walk(g | {o : '#'}) [1] for o in path))
+seen = set()
+
+while True:
+    seen.add((r, c))
+    if not (0 <= r + dr <= rows and 0 <= c + dc <= cols): break
+    if grid[r + dr][c + dc] == '#':
+        dc, dr = -dr, dc
+    else:
+        r += dr
+        c += dc
+
+print(len(seen))
